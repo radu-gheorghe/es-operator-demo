@@ -10,19 +10,21 @@ metadata:
 spec:
   scaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 4
-    minShardsPerNode: 5
+    minShardsPerNode: 1
     maxShardsPerNode: 10
-    minIndexReplicas: 0
+    minIndexReplicas: 1
     maxIndexReplicas: 2
     scaleUpCPUBoundary: 6000
     scaleUpCooldownSeconds: 60
     scaleUpThresholdDurationSeconds: 60
-    scaleDownCPUBoundary: 2000
+    #scaleDownCPUBoundary: 2000
+    scaleDownCPUBoundary: 1
     scaleDownCooldownSeconds: 120
     scaleDownThresholdDurationSeconds: 120
-    diskUsagePercentScaledownWatermark: 75
+    #diskUsagePercentScaledownWatermark: 75
+    diskUsagePercentScaledownWatermark: 1
   template:
     metadata:
       labels:
@@ -45,9 +47,23 @@ spec:
           value: "false"
         - name: "node.data"
           value: "true"
-        - name: "ES_JAVA_OPTS"
-          value: "-Xmx256m -Xms256m"
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:7.4.2"
+        - name: "OPENSEARCH_JAVA_OPTS"
+          value: "-Xmx512m -Xms512m"
+        - name: "cluster.name"
+          value: "es-cluster"
+        - name: "network.host"
+          value: "0.0.0.0"
+        - name: "bootstrap.memory_lock"
+          value: "false"
+        - name: "discovery.seed_hosts"
+          value: "es-master"
+        - name: "cluster.initial_master_nodes"
+          value: "es-master-0"
+        - name: "DISABLE_INSTALL_DEMO_CONFIG"
+          value: "true"
+        - name: "DISABLE_SECURITY_PLUGIN"
+          value: "true"
+        image: "opensearchproject/opensearch:1.3.0"
         ports:
         - containerPort: 9300
           name: transport
@@ -56,19 +72,17 @@ spec:
             path: /_cat/master
             port: 9200
           timeoutSeconds: 10
+          failureThreshold: 10
+          periodSeconds: 20
+          initialDelaySeconds: 120
         resources:
           limits:
-            cpu: 100m
-            memory: 800Mi
+            memory: 1Gi
           requests:
-            cpu: 100m
-            memory: 800Mi
+            memory: 1Gi
         volumeMounts:
         - mountPath: /usr/share/elasticsearch/data
           name: data
-        - name: elasticsearch-config
-          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
-          subPath: elasticsearch.yml
       initContainers:
       - command:
         - sysctl
@@ -90,9 +104,3 @@ spec:
       volumes:
       - name: data
         emptyDir: {}
-      - name: elasticsearch-config
-        configMap:
-          name: es-config
-          items:
-          - key: elasticsearch.yml
-            path: elasticsearch.yml

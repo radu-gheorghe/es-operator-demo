@@ -9,13 +9,6 @@ kind: ConfigMap
 metadata:
   name: es-config
   namespace: demo
-data:
-  elasticsearch.yml: |
-    cluster.name: es-cluster
-    network.host: "0.0.0.0"
-    bootstrap.memory_lock: false
-    discovery.seed_hosts: [es-master]
-    cluster.initial_master_nodes: [es-master-0]
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -57,24 +50,36 @@ spec:
       containers:
       - name: elasticsearch
         resources:
-          requests:
-            memory: 512Mi
-            cpu: 100m
           limits:
-            memory: 512Mi
-            cpu: 100m
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:7.4.2"
+            memory: 1Gi
+          requests:
+            memory: 1Gi
+        image: "opensearchproject/opensearch:1.3.0"
         env:
         - name: "node.name"
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: "ES_JAVA_OPTS"
+        - name: "OPENSEARCH_JAVA_OPTS"
           value: "-Xmx256m -Xms256m"
-        - name: node.master
+        - name: "node.master"
           value: "true"
-        - name: node.data
+        - name: "node.data"
           value: "false"
+        - name: "cluster.name"
+          value: "es-cluster"
+        - name: "network.host"
+          value: "0.0.0.0"
+        - name: "bootstrap.memory_lock"
+          value: "false"
+        - name: "discovery.seed_hosts"
+          value: "es-master"
+        - name: "cluster.initial_master_nodes"
+          value: "es-master-0"
+        - name: "DISABLE_INSTALL_DEMO_CONFIG"
+          value: "true"
+        - name: "DISABLE_SECURITY_PLUGIN"
+          value: "true"
         readinessProbe:
           httpGet:
             scheme: HTTP
@@ -89,18 +94,9 @@ spec:
         volumeMounts:
         - name: es-data
           mountPath: /usr/share/elasticsearch/data
-        - name: elasticsearch-config
-          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
-          subPath: elasticsearch.yml
       volumes:
         - name: es-data
           emptyDir: {}
-        - name: elasticsearch-config
-          configMap:
-            name: es-config
-            items:
-              - key: elasticsearch.yml
-                path: elasticsearch.yml
 ---
 apiVersion: v1
 kind: Service
