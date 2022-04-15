@@ -12,10 +12,10 @@ spec:
     enabled: true
     minReplicas: 2
     maxReplicas: 4
-    minShardsPerNode: 1
+    minShardsPerNode: 5
     maxShardsPerNode: 10
     minIndexReplicas: 1
-    maxIndexReplicas: 2
+    maxIndexReplicas: 3
     scaleUpCPUBoundary: 6000
     scaleUpCooldownSeconds: 60
     scaleUpThresholdDurationSeconds: 60
@@ -23,8 +23,7 @@ spec:
     scaleDownCPUBoundary: 1
     scaleDownCooldownSeconds: 120
     scaleDownThresholdDurationSeconds: 120
-    #diskUsagePercentScaledownWatermark: 75
-    diskUsagePercentScaledownWatermark: 1
+    diskUsagePercentScaledownWatermark: 75
   template:
     metadata:
       labels:
@@ -74,7 +73,7 @@ spec:
           timeoutSeconds: 10
           failureThreshold: 10
           periodSeconds: 20
-          initialDelaySeconds: 120
+          initialDelaySeconds: 30
         resources:
           limits:
             memory: 1Gi

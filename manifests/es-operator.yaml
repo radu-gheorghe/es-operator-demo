@@ -33,7 +33,7 @@ spec:
       serviceAccountName: operator
       containers:
       - name: es-operator
-        image: radugheorghe77/es-operator:v0.1.2-56-g0af4bb8
+        image: radugheorghe77/es-operator:v0.1.2-63-gb020a95-dirty
         args:
         - --priority-node-selector=lifecycle-status=ready
         - --interval=30s

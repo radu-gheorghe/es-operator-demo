@@ -10,6 +10,11 @@ This demo is part of the talk 'Operating Elasticsearch in Kubernetes' by Mikkel 
 
 Have a Kubernetes cluster at hand (e.g. [kind](https://github.com/kubernetes-sigs/kind) or [minikube](https://github.com/kubernetes/minikube/)), and `kubectl` configured to point to it.
 
+For Docker Desktop's Kuberenetes, install the Metrics Server:
+```
+kubectl apply -f manifests/components.yaml
+```
+
 ## Step 1 - Set up Roles
 
 The ES Operator needs special permissions to access Kubernetes APIs, and Elasticsearch needs privileged access to increase the operating system limits for memory-mapped files.
