@@ -17,6 +17,8 @@ spec:
     minIndexReplicas: 1
     maxIndexReplicas: 3
     scaleUpCPUBoundary: 6000
+    scaleUpDiskUsagePercentBoundary: 80
+    scaleDownDiskUsagePercentBoundary: 50
     scaleUpCooldownSeconds: 60
     scaleUpThresholdDurationSeconds: 60
     #scaleDownCPUBoundary: 2000

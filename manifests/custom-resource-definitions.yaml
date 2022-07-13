@@ -62,6 +62,14 @@ spec:
                   type: integer
                   format: int32
                   minimum: 0
+                scaleUpDiskUsagePercentBoundary:
+                  type: integer
+                  format: int32
+                  minimum: 0
+                scaleDownDiskUsagePercentBoundary:
+                  type: integer
+                  format: int32
+                  minimum: 0
                 scaleUpThresholdDurationSeconds:
                   type: integer
                   format: int64
